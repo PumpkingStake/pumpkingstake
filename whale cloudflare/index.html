@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🐋 WHALECOIN · Fun DeFi Yield → Buyback & Burn</title>
+  <link rel="icon" href="whale.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* ========== TODO EL CSS SE MANTIENE IGUAL ========== */
+    /* (todo el estilo que ya tienes, no lo repito para no alargar) */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --ocean-deep: #0a1a2e; /* ... etc ... */ }
+    /* ... todo el CSS exactamente como lo tenías ... */
+  </style>
+</head>
+<body>
+  <!-- ========== TODO EL HTML SE MANTIENE IGUAL ========== -->
+  <!-- (todo el cuerpo, nav, hero, vault, etc.) -->
+
+  <script>
+    // ============================================================
+    // CONFIGURACIÓN (sin keys ni endpoints de Blockfrost/Koios)
+    // ============================================================
+    const CONFIG = {
+      PROJECT_NAME: "WHALECOIN",
+      TOKEN_TICKER: "WHALE",
+      VAULT_ADDRESS: "addr1qx3z9euk87tm3wcpnypgqkv88yrfjj2y44lpk458w496gh4vxtqhs6fzlvy0kxd7xg2ntl968wq2rk6mr700dpntf04sh80ka6",
+      TOKEN_POLICY_ID: "326c008488f7b9a8c6fbe9e4ab2c8d1ba8d7f33284970f3dd2d5142d",
+      TOKEN_ASSET_NAME_HEX: "5748414c45434f494e",
+      BURN_ADDRESS: "addr1w8qmxkacjdffxah0l3qg8hq2pmvs58q8lcy42zy9kda2ylc6dy5r4",
+      TOKEN_TOTAL_SUPPLY: 1000000000,
+      LOCKED_ADDRESS: "addr1w8wma0rzvdexhnqrty6t8dcur7c5ffu2rjau2ayec3d3azg5qp35x",
+      TOKEN_NAMES: {
+        "f13ac4d66b3ee19a6aa0f2a22298737bd907cc95121662fc971b5275": "STRIKE",
+        "eb7a93ebc321647673490810f618b548d7c24aa64d30ae342dba7076": "ASCEND",
+        "2d9db8a89f074aa045eab177f23a3395f62ced8b53499a9e4ad46c80": "SURF",
+        "2da97f55d49be13dabc8450a2eabab0412f3075a03f7519d32d46925": "PULSE",
+        "ff9a1b456f074e03be90631e1a5f9b6ed08eacabd0e7f95a11ffff1": "ATLAS",
+        "8972f0c58dd51e138b981e2eca8a46ecad4e4447aa073cbce54eb485": "OURO",
+        "f5808c2c990d86da54bfc97d89cee6efa20cd8461616359478d96b4c": "ATLAS/ADA LP",
+      },
+      PROTOCOL_TOKENS: {
+        strike: { policy_id: "f13ac4d66b3ee19a6aa0f2a22298737bd907cc95121662fc971b5275", asset_name: "535452494b45" },
+        ascend: { policy_id: "eb7a93ebc321647673490810f618b548d7c24aa64d30ae342dba7076", asset_name: "0014df10415343454e44" },
+        surf: { policy_id: "2d9db8a89f074aa045eab177f23a3395f62ced8b53499a9e4ad46c80", asset_name: "464c4f57" },
+        pulse: { policy_id: "2da97f55d49be13dabc8450a2eabab0412f3075a03f7519d32d46925", asset_name: "0014df1050554c5345" },
+        atlas: { policy_id: "9ff9a1b456f074e03be90631e1a5f9b6ed08eacabd0e7f95a11ffff1", asset_name: "0014df1041544c4153" },
+        ouro: { policy_id: "8972f0c58dd51e138b981e2eca8a46ecad4e4447aa073cbce54eb485", asset_name: "4f55524f" },
+      },
+      DECIMALS: {
+        ADA: 6,
+        WHALE: 0,
+        WHALECOIN: 0,
+        ASCEND: 6,
+        STRIKE: 6,    
+        SURF: 6,
+        PULSE: 6,
+        ATLAS: 6,
+        OURO: 0,
+        "ATLAS/ADA LP": 6,
+      },
+      TOKEN_PRICES: {
+        ADA: 0.158,
+        ASCEND: 0.000001,
+      },
+      // ⚠️ YA NO HAY BLOCKFROST_API_KEY, ni endpoints, ni proxies
+      BUY_LINK: "https://www.snek.fun/token/326c008488f7b9a8c6fbe9e4ab2c8d1ba8d7f33284970f3dd2d5142d5748414c45434f494e",
+    };
+
+    const PROTOCOLS = [
+      { id: "strike", name: "Strike", kind: "Staking / Perps / Vault", url: "https://app.strikefinance.org/staking", desc: "USDM vault and Staking.", domain: "strikefinance.org", fallbackIcon: "⚡" },
+      { id: "ascend", name: "Ascend", kind: "Staking / Prediction", url: "https://staking.ascend.market/", desc: "Liquid staking platform on Cardano and Midnight.", customIcon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23ff6b35'/%3E%3Ctext x='50' y='68' font-size='48' text-anchor='middle' fill='white' font-weight='bold' font-family='sans-serif'%3EA%3C/text%3E%3C/svg%3E", fallbackIcon: "🐠" },
+      { id: "surf", name: "Surf", kind: "Staking / Lending", url: "https://surflending.org/es/staking", desc: "Pooled lending protocol: lenders earn variable interest based on loan demand.", domain: "surflending.org", fallbackIcon: "🏄" },
+      { id: "pulse", name: "Pulse", kind: "Staking / Yield", url: "https://pulsecardano.org/app", desc: "Allow to split and trade future yield, bringing fixed income, speculation, and hedging opportunities to the Cardano ecosystem.", domain: "pulsecardano.org", fallbackIcon: "❤️" },
+      { id: "atlas", name: "Atlas", kind: "Staking / Yield", url: "https://atlas-defi.com", desc: "Yield tokenization protocol. Split yield-bearing assets into Principal and Yield tokens.", domain: "atlas-defi.com", fallbackIcon: "🗺️" },
+      { id: "ouro", name: "OURO", kind: "DEX / Staking", url: "https://app.ourodex.io/", desc: "Decentralized Finance built on Cardano and expanding to Midnight.", customIcon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23f5a623'/%3E%3Ccircle cx='50' cy='50' r='35' fill='none' stroke='%23e0962a' stroke-width='4'/%3E%3Ctext x='50' y='66' font-size='44' text-anchor='middle' fill='white' font-weight='bold' font-family='sans-serif'%3EO%3C/text%3E%3C/svg%3E", fallbackIcon: "🪙" },
+    ];
+
+    // ============================================================
+    // FUNCIÓN fetchAddressInfo (nuevo backend)
+    // ============================================================
+    async function fetchAddressInfo(addresses) {
+      const url = `/api/address-info?addresses=${addresses.join(',')}`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`address-info ${res.status}: ${text}`);
+      }
+      const data = await res.json();
+      return data;
+    }
+
+    // ============================================================
+    // TODAS LAS FUNCIONES AUXILIARES (shortAddr, hexToString, etc.)
+    // SE MANTIENEN IGUALES (no las repito, ya las tienes)
+    // ============================================================
+
+    // ============================================================
+    // NUEVAS VERSIONES DE fetchVaultBalance, fetchBurnTracking, fetchLockedTracking
+    // ============================================================
+    async function fetchVaultBalance() {
+      const loadingEl = document.getElementById('vaultLoading');
+      const errorEl = document.getElementById('vaultError');
+      const contentEl = document.getElementById('vaultContent');
+      const vaultBadge = document.getElementById('vaultLiveBadge');
+
+      loadingEl.style.display = 'block';
+      errorEl.style.display = 'none';
+      contentEl.style.display = 'none';
+      if (vaultBadge) vaultBadge.classList.add('stale');
+
+      // Intentar usar caché local
+      const cached = getCache();
+      if (cached) {
+        lastVaultRender = { payload: cached, isLive: false, source: 'Cache' };
+        renderVaultData(cached, false, 'Cache');
+        loadingEl.style.display = 'none';
+        contentEl.style.display = 'block';
+      }
+
+      try {
+        const data = await fetchAddressInfo([CONFIG.VAULT_ADDRESS]);
+        const result = data.results?.[0];
+        if (!result) throw new Error('No data for vault address');
+        
+        const lovelace = Number(result.balance || 0);
+        const ada = lovelace / 1_000_000;
+        const utxos = result.utxo_set || [];
+        const payload = { ada, utxos, timestamp: Date.now() };
+        saveCache(payload);
+        lastVaultRender = { payload, isLive: true, source: 'Blockfrost (via Cloudflare)' };
+        renderVaultData(payload, true, 'Blockfrost (via Cloudflare)');
+        loadingEl.style.display = 'none';
+        contentEl.style.display = 'block';
+        if (vaultBadge) vaultBadge.classList.remove('stale');
+      } catch (err) {
+        console.error('Error fetching vault:', err);
+        loadingEl.style.display = 'none';
+        errorEl.style.display = 'block';
+        errorEl.innerHTML = `
+          ⚠️ Could not fetch vault data.
+          <br>${err.message}
+          <button class="retry-btn" onclick="fetchVaultBalance()">↻ Retry</button>
+        `;
+      }
+    }
+
+    async function fetchBurnTracking() {
+      if (!CONFIG.BURN_ADDRESS || !CONFIG.TOKEN_POLICY_ID || !CONFIG.TOKEN_ASSET_NAME_HEX) {
+        document.getElementById('burnPctDisplay').textContent = '—';
+        document.getElementById('burnPctInside').textContent = '—';
+        document.getElementById('burnFill').style.width = '0%';
+        return;
+      }
+      try {
+        const data = await fetchAddressInfo([CONFIG.BURN_ADDRESS]);
+        const result = data.results?.[0];
+        if (!result) return;
+        let burned = 0;
+        (result.utxo_set || []).forEach(utxo => {
+          (utxo.asset_list || []).forEach(a => {
+            if (a.policy_id === CONFIG.TOKEN_POLICY_ID && a.asset_name === CONFIG.TOKEN_ASSET_NAME_HEX) {
+              burned += Number(a.quantity);
+            }
+          });
+        });
+        lastBurnedAmount = burned;
+        const pct = (burned / CONFIG.TOKEN_TOTAL_SUPPLY) * 100;
+        const burnDecimals = CONFIG.DECIMALS[CONFIG.TOKEN_TICKER] != null ? CONFIG.DECIMALS[CONFIG.TOKEN_TICKER] : 6;
+        const burnedFormatted = formatTokenAmount(burned, burnDecimals);
+        const totalFormatted = formatTokenAmount(CONFIG.TOKEN_TOTAL_SUPPLY, burnDecimals);
+
+        document.getElementById('burnPctDisplay').textContent = pct.toFixed(2) + '%';
+        document.getElementById('burnPctInside').textContent = pct.toFixed(0) + '%';
+        document.getElementById('burnFill').style.width = Math.min(pct, 100) + '%';
+        document.getElementById('burnPctInside').style.opacity = pct < 12 ? '0' : '1';
+        document.getElementById('burnAmountDetail').textContent = `(${burnedFormatted} WHALE)`;
+        document.getElementById('burnDetail').textContent =
+          `${burnedFormatted} $WHALECOIN burned of ${totalFormatted} total supply`;
+        const tokBurnedEl = document.getElementById('tokBurnedRow');
+        if (tokBurnedEl) tokBurnedEl.textContent = `${burnedFormatted} (${pct.toFixed(2)}%)`;
+
+        renderBurnValue();
+        renderMarketData();
+      } catch (err) {
+        console.warn('Burn tracking error:', err);
+      }
+    }
+
+    async function fetchLockedTracking() {
+      if (!CONFIG.LOCKED_ADDRESS) return;
+      try {
+        const data = await fetchAddressInfo([CONFIG.LOCKED_ADDRESS]);
+        const result = data.results?.[0];
+        if (!result) return;
+        let locked = 0;
+        (result.utxo_set || []).forEach(utxo => {
+          (utxo.asset_list || []).forEach(a => {
+            if (a.policy_id === CONFIG.TOKEN_POLICY_ID && a.asset_name === CONFIG.TOKEN_ASSET_NAME_HEX) {
+              locked += Number(a.quantity);
+            }
+          });
+        });
+        lastLockedAmount = locked;
+        const burnDecimals = CONFIG.DECIMALS[CONFIG.TOKEN_TICKER] != null ? CONFIG.DECIMALS[CONFIG.TOKEN_TICKER] : 6;
+        document.getElementById('tokLockedRow').textContent = formatTokenAmount(locked, burnDecimals);
+        const circulating = CONFIG.TOKEN_TOTAL_SUPPLY - lastBurnedAmount - locked;
+        document.getElementById('tokCirculatingRow').textContent = formatTokenAmount(circulating, burnDecimals);
+        renderMarketData();
+      } catch (err) {
+        console.warn('Locked tracking error:', err);
+      }
+    }
+
+    // ============================================================
+    // EL RESTO DE FUNCIONES (renderVaultData, updateTvl, renderDonutChart, etc.)
+    // SE MANTIENEN IGUALES (no las repito)
+    // ============================================================
+
+    // ============================================================
+    // INICIALIZACIÓN
+    // ============================================================
+    function init() {
+      document.title = CONFIG.PROJECT_NAME + ' · Fun DeFi Yield → Buyback & Burn';
+      
+      const short = shortAddr(CONFIG.VAULT_ADDRESS);
+      document.getElementById('addrShort').textContent = short;
+      const explorerUrl = 'https://cexplorer.io/address/' + CONFIG.VAULT_ADDRESS;
+      document.getElementById('explorerLink').href = explorerUrl;
+      document.getElementById('explorerLink2').href = explorerUrl;
+      document.getElementById('buyLink').href = CONFIG.BUY_LINK;
+
+      document.getElementById('copyAddr').addEventListener('click', () => {
+        navigator.clipboard.writeText(CONFIG.VAULT_ADDRESS);
+        const btn = document.getElementById('copyAddr');
+        const old = btn.textContent;
+        btn.textContent = '✓ copied!';
+        showToast('Vault address copied');
+        setTimeout(() => btn.textContent = old, 1500);
+      });
+
+      startWhalePhrases();
+      renderFlowPills();
+      renderReefs();
+
+      fetchAllPrices();
+      fetchProtocolYields();
+
+      fetchVaultBalance();
+      fetchBurnTracking();
+      fetchLockedTracking();
+
+      fetchMiniTrades();
+      setInterval(fetchMiniTrades, 300_000);
+      setInterval(fetchAllPrices, 180_000);
+      setInterval(() => {
+        console.log('🐋 Actualizando datos en vivo...');
+        fetchVaultBalance();
+        fetchBurnTracking();
+        fetchLockedTracking();
+      }, 60_000);
+
+      console.log('🐋 WHALE VAULT · Usando /api/address-info (Cloudflare backend)');
+      console.log('📡 Wallet:', CONFIG.VAULT_ADDRESS);
+    }
+
+    // ============================================================
+    // EVENTOS Y COPIA (igual que antes)
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', init);
+    // ... (el resto de código de copia y eventos)
+  </script>
+</body>
+</html>
